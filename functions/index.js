@@ -5,6 +5,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
+const db = admin.database();
+const ref = db.ref('/customer/');
+
 /**
  * Http response
  *
@@ -14,12 +17,12 @@ admin.initializeApp(functions.config().firebase);
  */
 function response(bool, msg, res) {
 
-    let responseMsg = 'index.js: storeData: RESPONSE: bool' + bool + 'Message:' + msg;
+    let responseMsg = 'index.js: storeData: RESPONSE: bool: ' + bool + 'Message: ' + msg;
     console.log(responseMsg);
 
     res
         .status(bool ? 200 : 400)
-        .send(responseMsg);
+        .send(msg);
 }
 
 
@@ -31,9 +34,6 @@ function response(bool, msg, res) {
  * @param name, age
  */
 exports.storeData = functions.https.onRequest((req, res) => {
-
-    const db = admin.database();
-    const ref = db.ref('/customer/');
 
     const name = req.query.name;
     const age = req.query.age;
@@ -62,10 +62,25 @@ exports.storeData = functions.https.onRequest((req, res) => {
 });
 
 
-exports.resetCustomerDB = functions.https.onRequest((req, res) => {
+exports.readData = functions.https.onRequest((req, res) => {
 
-    const db = admin.database();
-    const ref = db.ref('/customer/');
+    function readCustomer() {
+
+        ref.once('value',
+            snapshot => {
+                response(true, snapshot.val(), res);
+            },
+            err => {
+                response(false, err, res);
+            })
+            .then(result => console.log('result: ', result));
+    }
+
+    readCustomer();
+});
+
+
+exports.resetCustomerDB = functions.https.onRequest((req, res) => {
 
     const areYouSure = req.query.areYouSure;
     console.log('areYouSure: ', areYouSure);
