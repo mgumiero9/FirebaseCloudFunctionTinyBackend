@@ -6,7 +6,9 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 const db = admin.database();
-const ref = db.ref('/customer/');
+const ref = db.ref('/DB/');
+const customersRef = ref.child("customers");
+
 
 /**
  * Http response
@@ -51,7 +53,7 @@ exports.storeData = functions.https.onRequest((req, res) => {
 
     function storeCustomer(callback) {
 
-        ref.push(customerObj,
+        customersRef.push(customerObj,
             (errOrNull) => {
                 console.log('errOrNull:', errOrNull);
                 errOrNull === null ? callback(true, errOrNull, res) : callback(false, errOrNull, res);
