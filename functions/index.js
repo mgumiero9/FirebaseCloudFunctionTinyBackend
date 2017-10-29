@@ -53,7 +53,7 @@ exports.storeData = functions.https.onRequest((req, res) => {
 
     function storeCustomer(callback) {
 
-        customersRef.push(customerObj,
+        ref.push(customerObj,
             (errOrNull) => {
                 console.log('errOrNull:', errOrNull);
                 errOrNull === null ? callback(true, errOrNull, res) : callback(false, errOrNull, res);
